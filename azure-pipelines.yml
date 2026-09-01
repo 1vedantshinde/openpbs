@@ -63,7 +63,7 @@ jobs:
       vmImage: 'ubuntu-latest'
     variables:
       OS_TYPE: "ubuntu:20.04"
-      PKG_INSTALL_CMD: "apt-get -y update && apt-get -y upgrade && apt-get install -y python3 build-essential"
+      PKG_INSTALL_CMD: "apt-get -y update && apt-get install -y python3 build-essential"
       DOCKER_EXTRA_ARG: "-e DEBIAN_FRONTEND=noninteractive -e LANGUAGE=C.UTF-8 -e LANG=C.UTF-8 -e LC_ALL=C.UTF-8"
       CI_CMD: "./ci --local"
       CONTAINER_NAME: "ubuntu2004-$(Build.BuildId)"
@@ -102,14 +102,6 @@ jobs:
       displayName: 'Start Docker container'
       
     - script: |
-        # Ubuntu 20.04 (Focal) has aged out of the live archive/security mirrors
-        # repoint sources.list at old-releases.ubuntu.com before any apt-get calls
-        docker exec $(CONTAINER_NAME) bash -c "
-          sed -i -e 's|http://archive.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' \
-                 -e 's|http://security.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' \
-                 /etc/apt/sources.list
-        "
-        
         # Install packages
         docker exec $(CONTAINER_NAME) bash -c "$(PKG_INSTALL_CMD)"
         
