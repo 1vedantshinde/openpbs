@@ -102,6 +102,14 @@ jobs:
       displayName: 'Start Docker container'
       
     - script: |
+        # Ubuntu 20.04 (Focal) has aged out of the live archive/security mirrors
+        # repoint sources.list at old-releases.ubuntu.com before any apt-get calls
+        docker exec $(CONTAINER_NAME) bash -c "
+          sed -i -e 's|http://archive.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' \
+                 -e 's|http://security.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' \
+                 /etc/apt/sources.list
+        "
+        
         # Install packages
         docker exec $(CONTAINER_NAME) bash -c "$(PKG_INSTALL_CMD)"
         
